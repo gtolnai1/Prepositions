@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B1/B2 Preposition Practice</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 { color: #2c3e50; font-size: 24px; text-align: center; }
+        p.instruction { color: #7f8c8d; text-align: center; margin-bottom: 20px; }
+        .exercise-item { margin-bottom: 20px; font-size: 18px; line-height: 1.6; }
+        input[type="text"] {
+            border: none;
+            border-bottom: 2px solid #3498db;
+            width: 80px;
+            text-align: center;
+            font-size: 18px;
+            outline: none;
+            color: #2980b9;
+        }
+        .buttons { text-align: center; margin-top: 30px; }
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+            margin: 0 10px;
+        }
+        .check-btn { background-color: #27ae60; color: white; }
+        .check-btn:hover { background-color: #219150; }
+        .restart-btn { background-color: #e67e22; color: white; }
+        .restart-btn:hover { background-color: #d35400; }
+        .feedback { margin-top: 20px; font-weight: bold; text-align: center; }
+        .correct { color: #27ae60; }
+        .incorrect { color: #e74c3c; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>English Usage Practice (B1/B2)</h1>
+    <p class="instruction">Fill in the missing preposition for each sentence.</p>
+    
+    <div id="quiz-container"></div>
+
+    <div class="buttons">
+        <button class="check-btn" onclick="checkAnswers()">Check Answers</button>
+        <button class="restart-btn" onclick="initQuiz()">Restart</button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+</div>
+
+<script>
+    // Pool of 60 items (B1/B2 Level)
+    const itemPool = [
+        { s: "I am very interested ___ learning new languages.", a: "in" },
+        { s: "It depends ___ the weather whether we go out.", a: "on" },
+        { s: "She is very good ___ playing the violin.", a: "at" },
+        { s: "He apologized ___ arriving late to the meeting.", a: "for" },
+        { s: "We are waiting ___ the bus to arrive.", a: "for" },
+        { s: "They succeeded ___ finishing the project on time.", a: "in" },
+        { s: "I don't believe ___ ghosts.", a: "in" },
+        { s: "She is afraid ___ spiders.", a: "of" },
+        { s: "He is responsible ___ the marketing department.", a: "for" },
+        { s: "Are you worried ___ your upcoming exams?", a: "about" },
+        { s: "The book consists ___ ten chapters.", a: "of" },
+        { s: "I need to concentrate ___ my homework.", a: "on" },
+        { s: "They laughed ___ his funny joke.", a: "at" },
+        { s: "She belongs ___ a local tennis club.", a: "to" },
+        { s: "He recovered ___ his illness very quickly.", a: "from" },
+        { s: "I applied ___ a job at the bank.", a: "for" },
+        { s: "We arrived ___ the station just in time.", a: "at" },
+        { s: "She complained ___ the cold weather.", a: "about" },
+        { s: "I agree ___ your opinion on this matter.", a: "with" },
+        { s: "He is famous ___ his beautiful paintings.", a: "for" },
+        { s: "They are looking forward ___ the summer holidays.", a: "to" },
+        { s: "She was accused ___ stealing the money.", a: "of" },
+        { s: "I am used ___ waking up early.", a: "to" },
+        { s: "He insisted ___ paying for the dinner.", a: "on" },
+        { s: "The film is based ___ a true story.", a: "on" },
+        { s: "She is capable ___ doing much better work.", a: "of" },
+        { s: "I am tired ___ doing the same thing every day.", a: "of" },
+        { s: "He apologized ___ her for the mistake.", a: "to" },
+        { s: "We need to deal ___ this problem immediately.", a: "with" },
+        { s: "She is married ___ a famous actor.", a: "to" },
+        { s: "I am proud ___ my daughter's achievements.", a: "of" },
+        { s: "He is keen ___ photography.", a: "on" },
+        { s: "They are similar ___ each other in many ways.", a: "to" },
+        { s: "I am bored ___ this TV show.", a: "with" },
+        { s: "She is excited ___ her trip to Japan.", a: "about" },
+        { s: "He is addicted ___ chocolate.", a: "to" },
+        { s: "We should focus ___ the most important tasks.", a: "on" },
+        { s: "She suffered ___ a bad headache all day.", a: "from" },
+        { s: "I don't approve ___ your behavior.", a: "of" },
+        { s: "He reminded me ___ my appointment.", a: "of" },
+        { s: "They participated ___ the school competition.", a: "in" },
+        { s: "She is allergic ___ nuts.", a: "to" },
+        { s: "I am satisfied ___ my exam results.", a: "with" },
+        { s: "He is talented ___ drawing.", a: "at" },
+        { s: "We are short ___ time, so please hurry.", a: "of" },
+        { s: "She is fond ___ classical music.", a: "of" },
+        { s: "I am aware ___ the risks involved.", a: "of" },
+        { s: "He is jealous ___ his brother's success.", a: "of" },
+        { s: "They are involved ___ a new project.", a: "in" },
+        { s: "She is crazy ___ football.", a: "about" },
+        { s: "I am grateful ___ your help.", a: "for" },
+        { s: "He is ashamed ___ what he did.", a: "of" },
+        { s: "We are ready ___ the challenge.", a: "for" },
+        { s: "She is brilliant ___ mathematics.", a: "at" },
+        { s: "I am curious ___ the result.", a: "about" },
+        { s: "He is serious ___ moving abroad.", a: "about" },
+        { s: "They are known ___ their hospitality.", a: "for" },
+        { s: "She is friendly ___ everyone she meets.", a: "to" },
+        { s: "I am disappointed ___ the service here.", a: "with" },
+        { s: "He is worried ___ losing his job.", a: "about" }
+    ];
+
+    let currentItems = [];
+
+    function initQuiz() {
+        document.getElementById('feedback').innerHTML = "";
+        // Shuffle and pick 5 random items
+        const shuffled = [...itemPool].sort(() => 0.5 - Math.random());
+        currentItems = shuffled.slice(0, 5);
+        
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = "";
+        
+        currentItems.forEach((item, index) => {
+            const parts = item.s.split("___");
+            const div = document.createElement('div');
+            div.className = 'exercise-item';
+            div.innerHTML = `${index + 1}. ${parts[0]} <input type="text" id="input-${index}" autocomplete="off"> ${parts[1]}`;
+            container.appendChild(div);
+        });
+    }
+
+    function checkAnswers() {
+        let score = 0;
+        currentItems.forEach((item, index) => {
+            const userInput = document.getElementById(`input-${index}`).value.trim().toLowerCase();
+            const inputField = document.getElementById(`input-${index}`);
+            
+            if (userInput === item.a) {
+                score++;
+                inputField.style.color = "#27ae60";
+                inputField.style.fontWeight = "bold";
+            } else {
+                inputField.style.color = "#e74c3c";
+                inputField.style.textDecoration = "line-through";
+                // Show correct answer next to it
+                const correctSpan = document.createElement('span');
+                correctSpan.innerHTML = ` (${item.a})`;
+                correctSpan.className = 'correct';
+                inputField.parentNode.appendChild(correctSpan);
+            }
+        });
+
+        const feedback = document.getElementById('feedback');
+        feedback.innerHTML = `You got ${score} out of 5 correct!`;
+        feedback.className = score === 5 ? 'feedback correct' : 'feedback incorrect';
+    }
+
+    // Initialize on load
+    window.onload = initQuiz;
+</script>
+
+</body>
+</html>
